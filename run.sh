@@ -1,0 +1,1 @@
+python ./tools/inference.py --image-path ./image --result-path ./result --config-file configs/faster_rcnn/faster_rcnn_x101_64x4d_fpn_2x_cell_voc.py --ckpt-path ./model/model.pth
