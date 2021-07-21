@@ -114,12 +114,10 @@ data
 *.pkl.json
 *.log.json
 work_dirs/
+result/
+model/
 
 # Pytorch
 *.pth
 *.py~
 *.sh~
-
-# Model
-model/
-result/

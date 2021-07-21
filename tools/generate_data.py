@@ -10,12 +10,13 @@ from lxml.etree import Element, SubElement, tostring
 from xml.dom.minidom import parseString
 
 change_dict = {'成熟单核细胞': '成熟单核细胞', '成熟淋巴细胞': '成熟淋巴细胞', '淋巴细胞': '成熟淋巴细胞', '分裂相': '核分裂相', '成熟浆细胞': '浆细胞', '多核浆细胞': '浆细胞', '双核浆细胞': '浆细胞', '浆细胞': '浆细胞', '巨晚幼红细胞': '巨晚幼红细胞', '巨幼样晚幼': '巨晚幼红细胞', '巨晚幼红细胞伴核畸形': '巨晚幼红细胞', '巨晚幼红细胞伴豪焦小体': '巨晚幼红细胞', '巨原始红细胞': '巨原始红细胞', '巨早幼红细胞': '巨早幼红细胞', '巨中性分叶核粒细胞': '巨中性分叶核粒细胞', '巨中性分叶核幼粒细胞': '巨中性分叶核粒细胞', '巨杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆': '巨中性杆状核粒细胞', '巨中性杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆状核': '巨中性杆状核粒细胞', '巨中性杆状核幼粒细胞': '巨中性杆状核粒细胞', '巨杆状核': '巨中性杆状核粒细胞', '巨晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性中幼粒细胞': '巨中性中幼粒细胞', '巨中幼粒细胞': '巨中性中幼粒细胞', '巨中幼红细胞': '巨中幼红细胞', '粒细胞核畸形': '粒细胞核畸形', '裸核型巨核细': '裸核型巨核细胞', '内皮细胞': '内皮细胞', '嗜碱': '嗜碱性粒细胞', '嗜碱性粒细胞': '嗜碱性粒细胞', '嗜碱晚': '嗜碱性晚幼粒细胞', '嗜酸性粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶核粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶核': '嗜酸性分叶核粒细胞', '嗜酸杆': '嗜酸性杆状核粒细胞', '嗜酸性杆': '嗜酸性杆状核粒细胞', '嗜酸性杆状核粒细胞': '嗜酸性杆状核粒细胞', '晚幼酸': '嗜酸性晚幼粒细胞', '嗜酸晚': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒细胞': '嗜酸性晚幼粒细胞', '中幼酸': '嗜酸性中幼粒细胞', '嗜酸中': '嗜酸性中幼粒细胞', '嗜酸性中幼粒细胞': '嗜酸性中幼粒细胞', '嗜酸性中幼粒': '嗜酸性中幼粒细胞', '退化细胞': '退化细胞', '吞噬细胞': '吞噬细胞', '含H-J小体的晚幼红细胞': '晚幼红细胞', '含H-J小体晚幼红细胞': '晚幼红细胞', '晚幼红细胞': '晚幼红细胞', '网状细胞': '网状细胞', '小巨核细胞': '小巨核细胞', '异常早幼粒': '异常早幼粒细胞', '异常早幼粒细胞': '异常早幼粒细胞', '异型淋巴细胞': '异型淋巴细胞', '幼稚单核细胞': '幼稚单核细胞', '幼单核细胞': '幼稚单核细胞', '幼稚浆细胞': '幼稚浆细胞', '幼稚巨核细胞': '幼稚巨核细胞', '幼稚淋巴细胞': '幼稚淋巴细胞', '幼淋巴细胞': '幼稚淋巴细胞', '原单核细胞': '原始单核细胞', '原始单核细胞': '原始单核细胞', '原始红细胞': '原始红细胞', '原始浆细胞': '原始浆细胞', '原始巨核细胞': '原始巨核细胞', '原始粒细胞': '原始粒细胞', '原始淋巴细胞': '原始淋巴细胞', '早幼红细胞': '早幼红细胞', '早幼粒细胞': '早幼粒细胞', '分叶核粒细胞': '中性分叶核粒细胞', '中性分叶核粒细胞': '中性分叶核粒细胞', '中幼分叶核粒细胞': '中性分叶核粒细胞', '分叶核': '中性分叶核粒细胞', '中性杆状核粒细胞': '中性杆状核粒细胞', '杆状核粒细胞': '中性杆状核粒细胞', '中性杆状核细胞': '中性杆状核粒细胞', '中性杆状核幼粒细胞': '中性杆状核粒细胞', '杆状核': '中性杆状核粒细胞', '中性晚幼粒细胞': '中性晚幼粒细胞', '晚幼': '中性晚幼粒细胞', '晚幼粒细胞': '中性晚幼粒细胞', '中幼粒细胞': '中性中幼粒细胞', '中性中幼粒细胞': '中性中幼粒细胞', '中性中幼红细胞': '中幼红细胞', '中幼红细胞': '中幼红细胞', '组织嗜碱细胞': '组织嗜碱细胞'}
+all_classes = ['中性中幼粒细胞', '退化细胞', '吞噬细胞', '中性分叶核粒细胞', '原始单核细胞', '内皮细胞', '原始淋巴细胞', '中幼红细胞', '嗜酸性分叶核粒细胞', '幼稚浆细胞', '巨原始红细胞', '巨晚幼红细胞', '异型淋巴细胞', '嗜酸性中幼粒细胞', '巨早幼红细胞', '原始浆细胞', '组织嗜碱细胞', '粒细胞核畸形', '异常早幼粒细胞', '幼稚淋巴细胞', '成熟淋巴细胞', '幼稚单核细胞', '嗜碱性粒细胞', '巨中性分叶核粒细胞', '裸核型巨核细胞', '幼稚巨核细胞', '嗜碱性晚幼粒细胞', '早幼红细胞', '中性杆状核粒细胞', '核分裂相', '巨中幼红细胞', '早幼粒细胞', '巨中性中幼粒细胞', '巨中性晚幼粒细胞', '嗜酸性晚幼粒细胞', '成熟单核细胞', '嗜酸性杆状核粒细胞', '小巨核细胞', '晚幼红细胞', '浆细胞', '原始巨核细胞', '中性晚幼粒细胞', '网状细胞', '原始红细胞', '巨中性杆状核粒细胞', '原始粒细胞']
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate data')
-    parser.add_argument('--source-dir', default='/home1/yinhaoli/data/cell/complete-1-26/origin', help='the dir of the source data')
+    parser.add_argument('--source-dir', default='/home1/yinhaoli/data/cell/new_data', help='the dir of the source data')
     parser.add_argument(
-        '--target-dir', default='/home1/yinhaoli/data/cell/complete-1-26', help='the dir to save the generated data')
+        '--target-dir', default='/home1/yinhaoli/data/cell/20210708/Annotations', help='the dir to save the generated data')
     parser.add_argument(
         '--train-ratio', default=0.7, type=float, help='ratio of the train number')
 
@@ -26,7 +27,9 @@ def _find_unlabeled_data(data_root):
     img_data_dir = osp.join(data_root, 'JPEGImages')
     ann_data_dir = osp.join(data_root, 'Annotations')
     img_names = os.listdir(img_data_dir)
+    img_names = [img_name.split('.')[0] for img_name in img_names]
     ann_names = os.listdir(ann_data_dir)
+    ann_names = [ann_name.split('.')[0] for ann_name in ann_names]
     unlabeled_names = []
     for img_name in img_names:
         if img_name not in ann_names:
@@ -168,6 +171,40 @@ def _get_class_names(annotation_path):
 
     print(set(class_names))
 
+def _count_class(annotation_path):
+    xml_names = os.listdir(annotation_path)
+    class_names = {}
+    other_names = {}
+    for xml_name in xml_names:
+        tree = ET.parse(osp.join(annotation_path, xml_name))
+        objects = tree.findall('object')
+        for object in objects:
+            class_name = object.find('name').text
+            if change_dict.get(class_name) != None:
+                change_name = change_dict[class_name]
+                if class_names.get(change_name) == None:
+                    class_names[change_name] = 1
+                else:
+                    class_names[change_name] += 1
+            else:
+                if other_names.get(class_name) == None:
+                    other_names[class_name] = 1
+                else:
+                    other_names[class_name] += 1
+
+    class_list = sorted(class_names.items(), key=lambda x: x[1])
+    other_list = sorted(other_names.items(), key=lambda x: x[1])
+
+    for class_name, value in class_list:
+        print('{} {}'.format(class_name, value))
+        # print('{}'.format(value))
+    print(len(class_list))
+
+    for class_name, value in other_list:
+        print('{} {}'.format(class_name, value))
+        # print('{}'.format(class_name))
+    print(len(other_list))
+
 def _generate_ann(target_dir, annotations):
     annotations_dict = dict()
     mmcv.mkdir_or_exist(osp.join(target_dir, 'Annotations'))
@@ -232,8 +269,9 @@ def main():
     # _generate_division(target_dir, train_ratio)
     # names = _count_data_info(target_dir)
     # print(names)
-    _divide_dataset(source_dir, target_dir, train_ratio)
+    # _divide_dataset(source_dir, target_dir, train_ratio)
     # _get_class_names(osp.join(source_dir, 'Annotations'))
     # _find_unlabeled_data(target_dir)
+    _count_class(target_dir)
 if __name__ == '__main__':
     main()
