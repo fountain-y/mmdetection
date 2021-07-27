@@ -9,14 +9,17 @@ import xml.etree.ElementTree as ET
 from lxml.etree import Element, SubElement, tostring
 from xml.dom.minidom import parseString
 
-change_dict = {'成熟单核细胞': '成熟单核细胞', '成熟淋巴细胞': '成熟淋巴细胞', '淋巴细胞': '成熟淋巴细胞', '分裂相': '核分裂相', '成熟浆细胞': '浆细胞', '多核浆细胞': '浆细胞', '双核浆细胞': '浆细胞', '浆细胞': '浆细胞', '巨晚幼红细胞': '巨晚幼红细胞', '巨幼样晚幼': '巨晚幼红细胞', '巨晚幼红细胞伴核畸形': '巨晚幼红细胞', '巨晚幼红细胞伴豪焦小体': '巨晚幼红细胞', '巨原始红细胞': '巨原始红细胞', '巨早幼红细胞': '巨早幼红细胞', '巨中性分叶核粒细胞': '巨中性分叶核粒细胞', '巨中性分叶核幼粒细胞': '巨中性分叶核粒细胞', '巨杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆': '巨中性杆状核粒细胞', '巨中性杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆状核': '巨中性杆状核粒细胞', '巨中性杆状核幼粒细胞': '巨中性杆状核粒细胞', '巨杆状核': '巨中性杆状核粒细胞', '巨晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性中幼粒细胞': '巨中性中幼粒细胞', '巨中幼粒细胞': '巨中性中幼粒细胞', '巨中幼红细胞': '巨中幼红细胞', '粒细胞核畸形': '粒细胞核畸形', '裸核型巨核细': '裸核型巨核细胞', '内皮细胞': '内皮细胞', '嗜碱': '嗜碱性粒细胞', '嗜碱性粒细胞': '嗜碱性粒细胞', '嗜碱晚': '嗜碱性晚幼粒细胞', '嗜酸性粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶核粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶核': '嗜酸性分叶核粒细胞', '嗜酸杆': '嗜酸性杆状核粒细胞', '嗜酸性杆': '嗜酸性杆状核粒细胞', '嗜酸性杆状核粒细胞': '嗜酸性杆状核粒细胞', '晚幼酸': '嗜酸性晚幼粒细胞', '嗜酸晚': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒细胞': '嗜酸性晚幼粒细胞', '中幼酸': '嗜酸性中幼粒细胞', '嗜酸中': '嗜酸性中幼粒细胞', '嗜酸性中幼粒细胞': '嗜酸性中幼粒细胞', '嗜酸性中幼粒': '嗜酸性中幼粒细胞', '退化细胞': '退化细胞', '吞噬细胞': '吞噬细胞', '含H-J小体的晚幼红细胞': '晚幼红细胞', '含H-J小体晚幼红细胞': '晚幼红细胞', '晚幼红细胞': '晚幼红细胞', '网状细胞': '网状细胞', '小巨核细胞': '小巨核细胞', '异常早幼粒': '异常早幼粒细胞', '异常早幼粒细胞': '异常早幼粒细胞', '异型淋巴细胞': '异型淋巴细胞', '幼稚单核细胞': '幼稚单核细胞', '幼单核细胞': '幼稚单核细胞', '幼稚浆细胞': '幼稚浆细胞', '幼稚巨核细胞': '幼稚巨核细胞', '幼稚淋巴细胞': '幼稚淋巴细胞', '幼淋巴细胞': '幼稚淋巴细胞', '原单核细胞': '原始单核细胞', '原始单核细胞': '原始单核细胞', '原始红细胞': '原始红细胞', '原始浆细胞': '原始浆细胞', '原始巨核细胞': '原始巨核细胞', '原始粒细胞': '原始粒细胞', '原始淋巴细胞': '原始淋巴细胞', '早幼红细胞': '早幼红细胞', '早幼粒细胞': '早幼粒细胞', '分叶核粒细胞': '中性分叶核粒细胞', '中性分叶核粒细胞': '中性分叶核粒细胞', '中幼分叶核粒细胞': '中性分叶核粒细胞', '分叶核': '中性分叶核粒细胞', '中性杆状核粒细胞': '中性杆状核粒细胞', '杆状核粒细胞': '中性杆状核粒细胞', '中性杆状核细胞': '中性杆状核粒细胞', '中性杆状核幼粒细胞': '中性杆状核粒细胞', '杆状核': '中性杆状核粒细胞', '中性晚幼粒细胞': '中性晚幼粒细胞', '晚幼': '中性晚幼粒细胞', '晚幼粒细胞': '中性晚幼粒细胞', '中幼粒细胞': '中性中幼粒细胞', '中性中幼粒细胞': '中性中幼粒细胞', '中性中幼红细胞': '中幼红细胞', '中幼红细胞': '中幼红细胞', '组织嗜碱细胞': '组织嗜碱细胞'}
-all_classes = ['中性中幼粒细胞', '退化细胞', '吞噬细胞', '中性分叶核粒细胞', '原始单核细胞', '内皮细胞', '原始淋巴细胞', '中幼红细胞', '嗜酸性分叶核粒细胞', '幼稚浆细胞', '巨原始红细胞', '巨晚幼红细胞', '异型淋巴细胞', '嗜酸性中幼粒细胞', '巨早幼红细胞', '原始浆细胞', '组织嗜碱细胞', '粒细胞核畸形', '异常早幼粒细胞', '幼稚淋巴细胞', '成熟淋巴细胞', '幼稚单核细胞', '嗜碱性粒细胞', '巨中性分叶核粒细胞', '裸核型巨核细胞', '幼稚巨核细胞', '嗜碱性晚幼粒细胞', '早幼红细胞', '中性杆状核粒细胞', '核分裂相', '巨中幼红细胞', '早幼粒细胞', '巨中性中幼粒细胞', '巨中性晚幼粒细胞', '嗜酸性晚幼粒细胞', '成熟单核细胞', '嗜酸性杆状核粒细胞', '小巨核细胞', '晚幼红细胞', '浆细胞', '原始巨核细胞', '中性晚幼粒细胞', '网状细胞', '原始红细胞', '巨中性杆状核粒细胞', '原始粒细胞']
+# change_dict = {'颗粒巨核细胞': '颗粒型巨核细胞', '多核浆细胞':'多核原浆细胞'}
+change_dict = {'颗粒巨核细胞': '颗粒型巨核细胞', '多核浆细胞':'多核原浆细胞', '成熟单核细胞': '成熟单核细胞', '成熟淋巴细胞': '成熟淋巴细胞', '淋巴细胞': '成熟淋巴细胞', '分裂相': '核分裂相', '成熟浆细胞': '浆细胞', '多核浆细胞': '浆细胞', '双核浆细胞': '浆细胞', '浆细胞': '浆细胞', '巨晚幼红细胞': '巨晚幼红细胞', '巨幼样晚幼': '巨晚幼红细胞', '巨晚幼红细胞伴核畸形': '巨晚幼红细胞', '巨晚幼红细胞伴豪焦小体': '巨晚幼红细胞', '巨原始红细胞': '巨原始红细胞', '巨早幼红细胞': '巨早幼红细胞', '巨中性分叶核粒细胞': '巨中性分叶核粒细胞', '巨中性分叶核幼粒细胞': '巨中性分叶核粒细胞', '巨杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆': '巨中性杆状核粒细胞', '巨中性杆状核粒细胞': '巨中性杆状核粒细胞', '巨幼样杆状核': '巨中性杆状核粒细胞', '巨中性杆状核幼粒细胞': '巨中性杆状核粒细胞', '巨杆状核': '巨中性杆状核粒细胞', '巨晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性晚幼粒细胞': '巨中性晚幼粒细胞', '巨中性中幼粒细胞': '巨中性中幼粒细胞', '巨中幼粒细胞': '巨中性中幼粒细胞', '巨中幼红细胞': '巨中幼红细胞', '粒细胞核畸形': '粒细胞核畸形', '裸核型巨核细': '裸核型巨核细胞', '内皮细胞': '内皮细胞', '嗜碱': '嗜碱性粒细胞', '嗜碱性粒细胞': '嗜碱性粒细胞', '嗜碱晚': '嗜碱性晚幼粒细胞', '嗜酸性粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶核粒细胞': '嗜酸性分叶核粒细胞', '嗜酸性分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶': '嗜酸性分叶核粒细胞', '嗜酸分叶核': '嗜酸性分叶核粒细胞', '嗜酸杆': '嗜酸性杆状核粒细胞', '嗜酸性杆': '嗜酸性杆状核粒细胞', '嗜酸性杆状核粒细胞': '嗜酸性杆状核粒细胞', '晚幼酸': '嗜酸性晚幼粒细胞', '嗜酸晚': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒': '嗜酸性晚幼粒细胞', '嗜酸性晚幼粒细胞': '嗜酸性晚幼粒细胞', '中幼酸': '嗜酸性中幼粒细胞', '嗜酸中': '嗜酸性中幼粒细胞', '嗜酸性中幼粒细胞': '嗜酸性中幼粒细胞', '嗜酸性中幼粒': '嗜酸性中幼粒细胞', '退化细胞': '退化细胞', '吞噬细胞': '吞噬细胞', '含H-J小体的晚幼红细胞': '晚幼红细胞', '含H-J小体晚幼红细胞': '晚幼红细胞', '晚幼红细胞': '晚幼红细胞', '网状细胞': '网状细胞', '小巨核细胞': '小巨核细胞', '异常早幼粒': '异常早幼粒细胞', '异常早幼粒细胞': '异常早幼粒细胞', '异型淋巴细胞': '异型淋巴细胞', '幼稚单核细胞': '幼稚单核细胞', '幼单核细胞': '幼稚单核细胞', '幼稚浆细胞': '幼稚浆细胞', '幼稚巨核细胞': '幼稚巨核细胞', '幼稚淋巴细胞': '幼稚淋巴细胞', '幼淋巴细胞': '幼稚淋巴细胞', '原单核细胞': '原始单核细胞', '原始单核细胞': '原始单核细胞', '原始红细胞': '原始红细胞', '原始浆细胞': '原始浆细胞', '原始巨核细胞': '原始巨核细胞', '原始粒细胞': '原始粒细胞', '原始淋巴细胞': '原始淋巴细胞', '早幼红细胞': '早幼红细胞', '早幼粒细胞': '早幼粒细胞', '分叶核粒细胞': '中性分叶核粒细胞', '中性分叶核粒细胞': '中性分叶核粒细胞', '中幼分叶核粒细胞': '中性分叶核粒细胞', '分叶核': '中性分叶核粒细胞', '中性杆状核粒细胞': '中性杆状核粒细胞', '杆状核粒细胞': '中性杆状核粒细胞', '中性杆状核细胞': '中性杆状核粒细胞', '中性杆状核幼粒细胞': '中性杆状核粒细胞', '杆状核': '中性杆状核粒细胞', '中性晚幼粒细胞': '中性晚幼粒细胞', '晚幼': '中性晚幼粒细胞', '晚幼粒细胞': '中性晚幼粒细胞', '中幼粒细胞': '中性中幼粒细胞', '中性中幼粒细胞': '中性中幼粒细胞', '中性中幼红细胞': '中幼红细胞', '中幼红细胞': '中幼红细胞', '组织嗜碱细胞': '组织嗜碱细胞'}
+all_classes = ['原始红细胞','早幼红细胞','中幼红细胞','晚幼红细胞','巨原始红细胞','巨早幼红细胞','巨中幼红细胞','巨晚幼红细胞','红系核分裂相','中红核分裂相','原始粒细胞','早幼粒细胞','中性中幼粒细胞','中性晚幼粒细胞','中性杆状核粒细胞','中性分叶核粒细胞','嗜酸性中幼粒细胞','嗜酸性晚幼粒细胞','嗜酸性杆状核粒细胞','嗜酸性分叶核粒细胞','嗜碱性晚幼粒细胞','嗜碱性粒细胞','巨中性中幼粒细胞','巨中性晚幼粒细胞','巨中性杆状核粒细胞','巨中性分叶核粒细胞','粒细胞核畸形','异常早幼粒细胞','病态粒细胞','原始淋巴细胞','幼稚淋巴细胞','成熟淋巴细胞','异型淋巴细胞','淋巴细胞有丝分裂','原始单核细胞','幼稚单核细胞','成熟单核细胞','单核细胞分裂相','原始浆细胞','幼稚浆细胞','多核原浆细胞','双核幼稚浆细胞','多核幼稚浆细胞','组织细胞型浆细胞','组织细胞样骨髓瘤细胞','原始巨核细胞','幼稚巨核细胞','颗粒型巨核细胞','产板巨核细胞','裸核型巨核细胞','小巨核细胞','组织嗜酸细胞','组织嗜碱细胞','中性颗粒性组织细胞','网状细胞','吞噬细胞','退化细胞','内皮细胞','裸核']
+del_classes = ['中红核分裂相', '单核细胞分裂相', '红系核分裂相', '淋巴细胞有丝分裂', '多核原浆细胞', '产板巨核细胞', '原始巨核细胞', '粒细胞核畸形', '裸核', '嗜碱性晚幼粒细胞', '组织嗜碱细胞', '组织嗜酸细胞', '组织细胞型浆细胞', '中性颗粒性组织细胞', '裸核型巨核细胞', '巨原始红细胞', '巨中性分叶核粒细胞', '吞噬细胞']
+train_classes = ['嗜碱性粒细胞', '网状细胞', '双核幼稚浆细胞', '颗粒型巨核细胞', '病态粒细胞', '巨中性中幼粒细胞', '多核幼稚浆细胞', '组织细胞样骨髓瘤细胞', '小巨核细胞', '原始红细胞', '幼稚巨核细胞', '嗜酸性中幼粒细胞', '退化细胞', '嗜酸性杆状核粒细胞', '巨中性晚幼粒细胞', '巨中性杆状核粒细胞', '嗜酸性晚幼粒细胞', '巨早幼红细胞', '成熟单核细胞', '嗜酸性分叶核粒细胞', '早幼红细胞', '原始浆细胞', '早幼粒细胞', '巨中幼红细胞', '异型淋巴细胞', '巨晚幼红细胞', '中性分叶核粒细胞', '中幼红细胞', '中性晚幼粒细胞', '中性中幼粒细胞', '幼稚淋巴细胞', '幼稚浆细胞', '中性杆状核粒细胞', '幼稚单核细胞', '晚幼红细胞', '原始淋巴细胞', '成熟淋巴细胞', '原始粒细胞', '异常早幼粒细胞', '原始单核细胞']
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate data')
-    parser.add_argument('--source-dir', default='/home1/yinhaoli/data/cell/new_data', help='the dir of the source data')
+    parser.add_argument('--source-dir', default='/home/ruize/data/complete-2-16', help='the dir of the source data')
     parser.add_argument(
-        '--target-dir', default='/home1/yinhaoli/data/cell/20210708/Annotations', help='the dir to save the generated data')
+        '--target-dir', default='/home/ruize/data/test/Annotations', help='the dir to save the generated data')
     parser.add_argument(
         '--train-ratio', default=0.7, type=float, help='ratio of the train number')
 
@@ -30,14 +33,25 @@ def _find_unlabeled_data(data_root):
     img_names = [img_name.split('.')[0] for img_name in img_names]
     ann_names = os.listdir(ann_data_dir)
     ann_names = [ann_name.split('.')[0] for ann_name in ann_names]
+
     unlabeled_names = []
     for img_name in img_names:
         if img_name not in ann_names:
             unlabeled_names.append(img_name)
-
     print(unlabeled_names)
+    for unlabeled_name in unlabeled_names:
+        os.remove(osp.join(data_root, 'JPEGImages', unlabeled_name+'.jpg'))
+        img_names.remove(unlabeled_name)
 
-
+    extra_annos = []
+    for ann_name in ann_names:
+        if ann_name not in img_names:
+            extra_annos.append(ann_name)
+    print(extra_annos)
+    for extra_anno in extra_annos:
+        os.remove(osp.join(data_root, 'Annotations', extra_anno+'.xml'))
+        ann_names.remove(extra_anno)
+        
 def _count_data_info(target_dir):
     annos = glob.glob(osp.join(target_dir, 'Annotations', '*.xml'))
     class_names = []
@@ -171,6 +185,20 @@ def _get_class_names(annotation_path):
 
     print(set(class_names))
 
+def _get_delclass_names(annotation_path):
+    xml_names = os.listdir(annotation_path)
+    class_names = []
+    for xml_name in xml_names:
+        tree = ET.parse(osp.join(annotation_path, xml_name))
+        objects = tree.findall('object')
+        for object in objects:
+            class_names.append(object.find('name').text)
+
+    all_class = set(class_names)
+    for class_name in all_class:
+        if class_name not in all_classes:
+            print(class_name)
+
 def _count_class(annotation_path):
     xml_names = os.listdir(annotation_path)
     class_names = {}
@@ -180,12 +208,11 @@ def _count_class(annotation_path):
         objects = tree.findall('object')
         for object in objects:
             class_name = object.find('name').text
-            if change_dict.get(class_name) != None:
-                change_name = change_dict[class_name]
-                if class_names.get(change_name) == None:
-                    class_names[change_name] = 1
+            if class_name in all_classes:
+                if class_names.get(class_name) == None:
+                    class_names[class_name] = 1
                 else:
-                    class_names[change_name] += 1
+                    class_names[class_name] += 1
             else:
                 if other_names.get(class_name) == None:
                     other_names[class_name] = 1
@@ -204,6 +231,54 @@ def _count_class(annotation_path):
         print('{} {}'.format(class_name, value))
         # print('{}'.format(class_name))
     print(len(other_list))
+
+    for class_name in all_classes:
+        if ((class_name not in class_names) and (class_name not in other_names)):
+            print('{}'.format(class_name))
+
+def _del_other_class(target_dir):
+    xml_names = os.listdir(osp.join(target_dir, 'Annotations'))
+    class_names = {}
+    other_names = {}
+    flag=0
+    for xml_name in xml_names:
+        fullpath = osp.join(target_dir, 'Annotations', xml_name)
+        tree = ET.parse(fullpath)
+        root = tree.getroot()
+        # print(root)
+        objects = tree.findall('object')
+        for object in objects:
+            class_name = object.find('name').text
+            if class_name not in all_classes:
+                root.remove(object)
+        tree.write(fullpath, encoding="UTF-8")
+        print(fullpath)
+        
+    print('finish')
+
+def _del_class(target_dir, del_classes):
+    xml_names = os.listdir(osp.join(target_dir, 'Annotations'))
+    class_names = {}
+    other_names = {}
+    for xml_name in xml_names:
+        fullpath = osp.join(target_dir, 'Annotations', xml_name)
+        tree = ET.parse(fullpath)
+        root = tree.getroot()
+        # print(root)
+        objects = tree.findall('object')
+        for object in objects:
+            class_name = object.find('name').text
+            if class_name in del_classes:
+                root.remove(object)
+        objects = tree.findall('object')
+        if objects is None:
+            os.remove(fullpath)
+            print('del '+fullpath)
+            continue
+        tree.write(fullpath, encoding="UTF-8")
+        print(fullpath)
+        
+    print('finish')
 
 def _generate_ann(target_dir, annotations):
     annotations_dict = dict()
@@ -229,16 +304,40 @@ def _change_names(target_dir, change_dict):
         tree = ET.parse(anno)
         objects = tree.findall('object')
         for object in objects:
-            object.find('name').text = change_dict[object.find('name').text]
-        tree.write(anno)
+            tmpname = object.find('name').text
+            if tmpname in change_dict:
+                object.find('name').text = change_dict[object.find('name').text]
+        tree.write(anno, encoding='utf-8')
         print(anno)
 
+def _rewrite(target_dir, filenames):
+    for filename in filenames:
+        tree = ET.parse(filename)
+        tree.write(filename, encoding='utf-8')
+        print(filename)
 
 def _divide_dataset(source_dir, target_dir, train_ratio):
     names = os.listdir(osp.join(source_dir, 'Annotations'))
     np.random.shuffle(names)
     train_names = names[:int(len(names) * train_ratio)]
     valid_names = names[int(len(names) * train_ratio):]
+
+    for class_name in train_classes:
+        not_found = 1
+        for valid_name in valid_names:
+            xml_path = os.path.join(source_dir, 'Annotations', valid_name)
+            tree = ET.parse(xml_path)
+            objects = tree.findall('object')
+            for object in objects:
+                tmpname = object.find('name').text
+                if tmpname == class_name:
+                    not_found = 0
+                    break
+            if not_found == 0:
+                break
+        if not_found == 1:
+            print(class_name)
+
     with open(osp.join(target_dir, 'train.txt'), 'w') as f:
         for train_name in train_names:
             name = train_name.split('.')[0]
@@ -261,17 +360,22 @@ def main():
     source_dir = args.source_dir
     target_dir = args.target_dir
     train_ratio = args.train_ratio
-    # _change_names(source_dir, change_dict)
+    print(target_dir)
+
+    # _change_names(target_dir, change_dict)
     # _copy_data(source_dir, target_dir)
-    # _get_class_names(osp.join(args.target_dir, 'Annotations'))
     # annotations = _copy_data(source_dir, target_dir)
     # _generate_ann(target_dir, annotations)
     # _generate_division(target_dir, train_ratio)
     # names = _count_data_info(target_dir)
     # print(names)
-    # _divide_dataset(source_dir, target_dir, train_ratio)
-    # _get_class_names(osp.join(source_dir, 'Annotations'))
+    _divide_dataset(source_dir, target_dir, train_ratio)
+    # _get_class_names(osp.join(target_dir, 'Annotations'))
+    # _get_delclass_names(osp.join(target_dir, 'Annotations'))
     # _find_unlabeled_data(target_dir)
-    _count_class(target_dir)
+    # _del_other_class(target_dir)
+    # _del_class(target_dir, del_classes)
+    # _count_class(osp.join(target_dir, 'Annotations'))
+
 if __name__ == '__main__':
     main()
