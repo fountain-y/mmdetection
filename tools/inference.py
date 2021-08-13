@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument(
         '--ckpt-path', help='checkpoint file to be used')
     parser.add_argument(
-        '--score-thr', default=0.3, help='threshold score to show the result')
+        '--score-thr', default=0.5, help='threshold score to show the result')
     args = parser.parse_args()
 
     return args

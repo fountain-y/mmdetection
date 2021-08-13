@@ -116,6 +116,7 @@ data
 work_dirs/
 result/
 model/
+image/
 
 # Pytorch
 *.pth
