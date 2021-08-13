@@ -4,6 +4,7 @@ import os.path as osp
 import argparse
 import os
 import torch
+import cv2
 
 
 def parse_args():
@@ -48,7 +49,7 @@ def main():
         if hasattr(model, 'module'):
             model = model.module
         img = model.show_result(img, result, score_thr=score_thr, show=False)
-        mmcv.imwrite(img, osp.join(result_path, file_name + '.png'))
+        mmcv.imwrite(img, osp.join(result_path, file_name + '.jpg'))
         print(f'{file_name} finished.')
 
 
