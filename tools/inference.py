@@ -21,6 +21,10 @@ def parse_args():
         '--ckpt-path', help='checkpoint file to be used')
     parser.add_argument(
         '--score-thr', default=0.5, help='threshold score to show the result')
+    parser.add_argument(
+        '--thickness', default=3, help='thickness of boxes')
+    parser.add_argument(
+        '--font-scale', default=40, help='font size')
     args = parser.parse_args()
 
     return args
@@ -33,6 +37,8 @@ def main():
     checkpoint_file = args.ckpt_path
     result_path = args.result_path
     score_thr = args.score_thr
+    thickness = args.thickness
+    font_scale = args.font_scale
     mmcv.mkdir_or_exist(result_path)
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     model = init_detector(config_file, checkpoint_file, device=device)
@@ -49,7 +55,7 @@ def main():
         result = inference_detector(model, imgname)
         if hasattr(model, 'module'):
             model = model.module
-        img = model.show_result(imgname, result, score_thr=score_thr, show=False)
+        img = model.show_result(imgname, result, score_thr=score_thr, show=False, thickness=thickness, font_scale=font_scale)
 
         os.makedirs(osp.join(result_path, 'JPEGImages'), exist_ok=True)
         mmcv.imwrite(img, osp.join(result_path, 'JPEGImages', file_name + '.jpg'))
