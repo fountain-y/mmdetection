@@ -387,8 +387,7 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
         Returns:
             img (Tensor): Only if not `show` or `out_file`
         """
-        # img = mmcv.imread(img)
-        img = cv2.imread(img)
+        img = mmcv.imread(img)
         img = img.copy()
         if isinstance(result, tuple):
             bbox_result, segm_result = result

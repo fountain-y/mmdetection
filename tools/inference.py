@@ -5,6 +5,7 @@ import argparse
 import os
 import torch
 import cv2
+from fileprocess import create_xml
 
 
 def parse_args():
@@ -43,13 +44,18 @@ def main():
     print('tot : {}'.format(len(names)))
     
     for name in names:
-        img = osp.join(image_path, name)
+        imgname = osp.join(image_path, name)
         file_name = name.split('.')[0]
-        result = inference_detector(model, img)
+        result = inference_detector(model, imgname)
         if hasattr(model, 'module'):
             model = model.module
-        img = model.show_result(img, result, score_thr=score_thr, show=False)
-        mmcv.imwrite(img, osp.join(result_path, file_name + '.jpg'))
+        img = model.show_result(imgname, result, score_thr=score_thr, show=False)
+
+        os.makedirs(osp.join(result_path, 'JPEGImages'), exist_ok=True)
+        mmcv.imwrite(img, osp.join(result_path, 'JPEGImages', file_name + '.jpg'))
+        
+        create_xml(file_name, result, result_path, img, model.CLASSES, score_thr)
+
         print(f'{file_name} finished.')
 
 
