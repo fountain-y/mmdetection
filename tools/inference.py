@@ -55,7 +55,16 @@ def main():
         result = inference_detector(model, imgname)
         if hasattr(model, 'module'):
             model = model.module
-        img = model.show_result(imgname, result, score_thr=score_thr, show=False, thickness=thickness, font_scale=font_scale)
+        img = model.show_result(
+                                imgname, 
+                                result, 
+                                bbox_color=(72, 101, 241),  # bbox color of (B,G,R)
+                                text_color=(72, 101, 241),  # text color of (B,G,R)
+                                score_thr=score_thr, 
+                                show=False, 
+                                thickness=thickness, 
+                                font_scale=font_scale
+                                )
 
         os.makedirs(osp.join(result_path, 'JPEGImages'), exist_ok=True)
         mmcv.imwrite(img, osp.join(result_path, 'JPEGImages', file_name + '.jpg'))
