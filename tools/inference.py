@@ -36,7 +36,7 @@ def main():
     config_file = args.config_file
     checkpoint_file = args.ckpt_path
     result_path = args.result_path
-    score_thr = args.score_thr
+    score_thr = float(args.score_thr)
     thickness = args.thickness
     font_scale = args.font_scale
     mmcv.mkdir_or_exist(result_path)
@@ -53,6 +53,8 @@ def main():
         imgname = osp.join(image_path, name)
         file_name = name.split('.')[0]
         result = inference_detector(model, imgname)
+        # print(len(result))
+        # dets, labels = 
         if hasattr(model, 'module'):
             model = model.module
         img = model.show_result(
