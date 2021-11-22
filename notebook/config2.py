@@ -1,0 +1,1 @@
+loss_bbox=dict(type='L1Loss', loss_weight=2.0)

@@ -1,0 +1,2 @@
+# CUDA_VISIBLE_DEVICES=8 python ./tools/train.py configs/retinanet/retinanet_r50_fpn_2x_cell_voc.py --work-dir work_dirs/retinanet_r50_fpn_2x_cell_voc_data_20211012 2>&1 | tee work_dirs/train_retinanet_r50_fpn_2x_cell_voc_data_20211012.log
+CUDA_VISIBLE_DEVICES=9 python ./tools/train.py configs/faster_rcnn/faster_rcnn_x101_64x4d_fpn_2x_cell_voc.py --work-dir work_dirs/faster_rcnn_x101_64x4d_fpn_2x_cell_voc_data_20211014 2>&1 | tee work_dirs/faster_rcnn_x101_64x4d_fpn_2x_cell_voc_data_20211014.log

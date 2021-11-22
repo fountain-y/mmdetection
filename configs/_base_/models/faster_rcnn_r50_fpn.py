@@ -87,7 +87,8 @@ model = dict(
                 ignore_iof_thr=-1),
             sampler=dict(
                 type='RandomSampler',
-                num=512,
+                # num=512,
+                num=10000000000.0,
                 pos_fraction=0.25,
                 neg_pos_ub=-1,
                 add_gt_as_proposals=True),
@@ -100,7 +101,7 @@ model = dict(
             nms=dict(type='nms', iou_threshold=0.7),
             min_bbox_size=0),
         rcnn=dict(
-            score_thr=0.05,
+            score_thr=0.4,
             nms=dict(type='nms', class_agnostic='True', iou_threshold=0.5),
             max_per_img=100)
         # soft-nms is also supported for rcnn testing

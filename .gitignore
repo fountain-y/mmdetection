@@ -122,3 +122,6 @@ image/
 *.pth
 *.py~
 *.sh~
+
+tmp/
+work_dirs

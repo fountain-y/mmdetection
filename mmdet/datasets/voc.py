@@ -8,6 +8,8 @@ from mmdet.core import eval_map, eval_recalls
 from .builder import DATASETS
 from .xml_style import XMLDataset
 
+from mmdet.models.detectors.base import imshow_det_bboxes_modify
+
 
 @DATASETS.register_module()
 class VOCDataset(XMLDataset):
@@ -37,15 +39,32 @@ class VOCDataset(XMLDataset):
             anno = annotations[i]
             filename = data_info['filename']
             img = mmcv.imread(osp.join(out_dir, filename))
-            mmcv.imshow_det_bboxes(
+            # mmcv.imshow_det_bboxes(
+            #     img,
+            #     anno['bboxes'],
+            #     anno['labels'],
+            #     bbox_color='green',
+            #     text_color='green',
+            #     class_names=self.CLASSES,
+            #     thickness=3,
+            #     out_file=osp.join(out_dir, filename),
+            #     show=False)
+            img = imshow_det_bboxes_modify(
                 img,
                 anno['bboxes'],
                 anno['labels'],
+                class_names=self.CLASSES, #classes_pinyin
+                # score_thr=score_thr,
                 bbox_color='green',
                 text_color='green',
-                class_names=classes_pinyin,
-                out_file=osp.join(out_dir, filename),
-                show=False)
+                thickness=3,
+                font_scale=40,
+                # win_name=win_name,
+                show=False,
+                # wait_time=wait_time,
+                out_file=osp.join(out_dir, filename)
+            )
+            
 
     def evaluate(self,
                  results,

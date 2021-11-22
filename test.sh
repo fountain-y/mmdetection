@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=6 python ./tools/test.py configs/faster_rcnn/faster_rcnn_x101_64x4d_fpn_2x_cell_voc.py work_dirs/faster_rcnn_x101_64x4d_fpn_2x_cell_voc_data_20210723/latest.pth --work-dir data/cells/all-20210722/ --eval mAP --show --show-dir work_dirs/faster_rcnn_x101_64x4d_fpn_2x_cell_voc_data_20211101/results_new --show-gt
