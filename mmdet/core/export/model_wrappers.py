@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 import warnings
 
@@ -34,7 +35,7 @@ class DeployBaseDetector(BaseDetector):
     def train_step(self, data, optimizer):
         raise NotImplementedError('This method is not implemented.')
 
-    def aforward_test(self, *, img, img_metas, **kwargs):
+    def forward_test(self, *, img, img_metas, **kwargs):
         raise NotImplementedError('This method is not implemented.')
 
     def async_simple_test(self, img, img_metas, **kwargs):
@@ -151,22 +152,32 @@ class ONNXRuntimeDetector(DeployBaseDetector):
 class TensorRTDetector(DeployBaseDetector):
     """Wrapper for detector's inference with TensorRT."""
 
-    def __init__(self, engine_file, class_names, device_id, output_names):
+    def __init__(self, engine_file, class_names, device_id, output_names=None):
         super(TensorRTDetector, self).__init__(class_names, device_id)
+        warnings.warn('`output_names` is deprecated and will be removed in '
+                      'future releases.')
+        from mmcv.tensorrt import TRTWraper, load_tensorrt_plugin
         try:
-            from mmcv.tensorrt import TRTWraper
+            load_tensorrt_plugin()
         except (ImportError, ModuleNotFoundError):
-            raise RuntimeError(
-                'Please install TensorRT: https://mmcv.readthedocs.io/en/latest/tensorrt_plugin.html#how-to-build-tensorrt-plugins-in-mmcv'  # noqa
-            )
+            warnings.warn('If input model has custom op from mmcv, \
+                you may have to build mmcv with TensorRT from source.')
 
-        self.output_names = output_names
-        self.model = TRTWraper(engine_file, ['input'], output_names)
+        output_names = ['dets', 'labels']
+        model = TRTWraper(engine_file, ['input'], output_names)
+        with_masks = False
+        # if TensorRT has totally 4 inputs/outputs, then
+        # the detector should have `mask` output.
+        if len(model.engine) == 4:
+            model.output_names = output_names + ['masks']
+            with_masks = True
+        self.model = model
+        self.with_masks = with_masks
 
     def forward_test(self, imgs, img_metas, **kwargs):
-        input_data = imgs[0]
+        input_data = imgs[0].contiguous()
         with torch.cuda.device(self.device_id), torch.no_grad():
             outputs = self.model({'input': input_data})
-            outputs = [outputs[name] for name in self.output_names]
+            outputs = [outputs[name] for name in self.model.output_names]
         outputs = [out.detach().cpu().numpy() for out in outputs]
         return outputs

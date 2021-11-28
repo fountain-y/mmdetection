@@ -1,104 +1,15 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 
 import mmcv
 import numpy as np
-import pinyin
 import torch
 import torch.distributed as dist
 from mmcv.runner import BaseModule, auto_fp16
 
-import cv2
-from PIL import Image, ImageDraw, ImageFont
+from mmdet.core.visualization import imshow_det_bboxes
 
-from mmcv.image import imread, imwrite
-from mmcv.visualization.color import color_val
-
-
-def imshow_det_bboxes_modify(img,
-                    bboxes,
-                    labels,
-                    class_names=None,
-                    score_thr=0,
-                    bbox_color='green',
-                    text_color='green',
-                    thickness=1,
-                    font_scale=0.5,
-                    show=True,
-                    win_name='',
-                    wait_time=0,
-                    out_file=None):
-    """Draw bboxes and class labels (with scores) on an image.
-
-    Args:
-        img (str or ndarray): The image to be displayed.
-        bboxes (ndarray): Bounding boxes (with scores), shaped (n, 4) or
-            (n, 5).
-        labels (ndarray): Labels of bboxes.
-        class_names (list[str]): Names of each classes.
-        score_thr (float): Minimum score of bboxes to be shown.
-        bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
-        text_color (str or tuple or :obj:`Color`): Color of texts.
-        thickness (int): Thickness of lines.
-        font_scale (float): Font scales of texts.
-        show (bool): Whether to show the image.
-        win_name (str): The window name.
-        wait_time (int): Value of waitKey param.
-        out_file (str or None): The filename to write the image.
-
-    Returns:
-        ndarray: The image with bboxes drawn on it.
-    """
-    assert bboxes.ndim == 2
-    assert labels.ndim == 1
-    assert bboxes.shape[0] == labels.shape[0]
-    assert bboxes.shape[1] == 4 or bboxes.shape[1] == 5
-    img = imread(img)
-    img = np.ascontiguousarray(img)
-
-    if score_thr > 0:
-        assert bboxes.shape[1] == 5
-        scores = bboxes[:, -1]
-        inds = scores > score_thr
-        bboxes = bboxes[inds, :]
-        labels = labels[inds]
-
-    bbox_color = color_val(bbox_color)
-    text_color = color_val(text_color)
-
-    for bbox, label in zip(bboxes, labels):
-        bbox_int = bbox.astype(np.int32)
-        left_top = (bbox_int[0], bbox_int[1])
-        right_bottom = (bbox_int[2], bbox_int[3])
-        cv2.rectangle(
-            img, left_top, right_bottom, bbox_color, thickness=thickness)
-        label_text = class_names[
-            label] if class_names is not None else f'cls {label}'
-        if len(bbox) > 4:
-            label_text += f'|{bbox[-1]:.02f}'
-        # cv2.putText(img, label_text, (bbox_int[0], bbox_int[1] - 2),
-        #             cv2.FONT_HERSHEY_COMPLEX, font_scale, text_color)
-        img = cv2ImgAddText(img, label_text, bbox_int[0] + 5, bbox_int[1] - 40, \
-                                text_color, font_scale)
-    if show:
-        imshow(img, win_name, wait_time)
-    if out_file is not None:
-        imwrite(img, out_file)
-    return img
-
-def cv2ImgAddText(img, text, left, top, textColor=(0, 255, 0), textSize=20):
-    if (isinstance(img, np.ndarray)):  # 判断是否OpenCV图片类型
-        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    # create an image to draw
-    draw = ImageDraw.Draw(img)
-    # font format
-    fontStyle = ImageFont.truetype(
-        "./SIMSUN.ttf", textSize, encoding="utf-8")
-    # add text
-    draw.text((left, top), text, (textColor[2], textColor[1], textColor[0]), font=fontStyle)
-    # convert to cv2 format
-    img = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
-    return img
 
 class BaseDetector(BaseModule, metaclass=ABCMeta):
     """Base class for detectors."""
@@ -267,7 +178,7 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
 
         Args:
             losses (dict): Raw output of the network, which usually contain
-                losses and other necessary infomation.
+                losses and other necessary information.
 
         Returns:
             tuple[Tensor, dict]: (loss, log_vars), loss is the loss tensor \
@@ -316,13 +227,13 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
             dict: It should contain at least 3 keys: ``loss``, ``log_vars``, \
                 ``num_samples``.
 
-                - ``loss`` is a tensor for back propagation, which can be a \
-                weighted sum of multiple losses.
+                - ``loss`` is a tensor for back propagation, which can be a
+                  weighted sum of multiple losses.
                 - ``log_vars`` contains all the variables to be sent to the
-                logger.
-                - ``num_samples`` indicates the batch size (when the model is \
-                DDP, it means the batch size on each GPU), which is used for \
-                averaging the logs.
+                  logger.
+                - ``num_samples`` indicates the batch size (when the model is
+                  DDP, it means the batch size on each GPU), which is used for
+                  averaging the logs.
         """
         losses = self(**data)
         loss, log_vars = self._parse_losses(losses)
@@ -332,7 +243,7 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
 
         return outputs
 
-    def val_step(self, data, optimizer):
+    def val_step(self, data, optimizer=None):
         """The iteration step during validation.
 
         This method shares the same signature as :func:`train_step`, but used
@@ -353,8 +264,9 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
                     score_thr=0.3,
                     bbox_color=(72, 101, 241),
                     text_color=(72, 101, 241),
-                    thickness=3,
-                    font_scale=40,
+                    mask_color=None,
+                    thickness=2,
+                    font_size=13,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -413,25 +325,18 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
         if out_file is not None:
             show = False
         # draw bounding boxes
-        classes_pinyin = []
-        for class_ch in self.CLASSES:
-            classes_pinyin.append(pinyin.get(class_ch, format='strip'))
-        
-        # ids = labels == 0
-        # bboxes = bboxes[ids, :]
-        # labels = labels[ids]
-        # score_thr = 0
-
-        img = imshow_det_bboxes_modify(
+        img = imshow_det_bboxes(
             img,
             bboxes,
             labels,
-            class_names=self.CLASSES, #classes_pinyin
+            segms,
+            class_names=self.CLASSES,
             score_thr=score_thr,
             bbox_color=bbox_color,
             text_color=text_color,
+            mask_color=mask_color,
             thickness=thickness,
-            font_scale=font_scale,
+            font_size=font_size,
             win_name=win_name,
             show=show,
             wait_time=wait_time,

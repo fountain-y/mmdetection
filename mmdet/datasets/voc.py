@@ -1,14 +1,11 @@
-import os.path as osp
+# Copyright (c) OpenMMLab. All rights reserved.
 from collections import OrderedDict
 
-import mmcv
 from mmcv.utils import print_log
 
 from mmdet.core import eval_map, eval_recalls
 from .builder import DATASETS
 from .xml_style import XMLDataset
-
-from mmdet.models.detectors.base import imshow_det_bboxes_modify
 
 
 @DATASETS.register_module()
@@ -26,45 +23,7 @@ class VOCDataset(XMLDataset):
         elif 'VOC2012' in self.img_prefix:
             self.year = 2012
         else:
-            self.year = 2012
-            # raise ValueError('Cannot infer dataset year from img_prefix')
-
-    def show_gt(self, out_dir):
-        import pinyin
-        annotations = [self.get_ann_info(i) for i in range(len(self))]
-        classes_pinyin = []
-        for class_ch in self.CLASSES:
-            classes_pinyin.append(pinyin.get(class_ch, format='strip'))
-        for i, data_info in enumerate(self.data_infos):
-            anno = annotations[i]
-            filename = data_info['filename']
-            img = mmcv.imread(osp.join(out_dir, filename))
-            # mmcv.imshow_det_bboxes(
-            #     img,
-            #     anno['bboxes'],
-            #     anno['labels'],
-            #     bbox_color='green',
-            #     text_color='green',
-            #     class_names=self.CLASSES,
-            #     thickness=3,
-            #     out_file=osp.join(out_dir, filename),
-            #     show=False)
-            img = imshow_det_bboxes_modify(
-                img,
-                anno['bboxes'],
-                anno['labels'],
-                class_names=self.CLASSES, #classes_pinyin
-                # score_thr=score_thr,
-                bbox_color='green',
-                text_color='green',
-                thickness=3,
-                font_scale=40,
-                # win_name=win_name,
-                show=False,
-                # wait_time=wait_time,
-                out_file=osp.join(out_dir, filename)
-            )
-            
+            raise ValueError('Cannot infer dataset year from img_prefix')
 
     def evaluate(self,
                  results,
@@ -111,20 +70,31 @@ class VOCDataset(XMLDataset):
             mean_aps = []
             for iou_thr in iou_thrs:
                 print_log(f'\n{"-" * 15}iou_thr: {iou_thr}{"-" * 15}')
+                # Follow the official implementation,
+                # http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCdevkit_18-May-2011.tar
+                # we should use the legacy coordinate system in mmdet 1.x,
+                # which means w, h should be computed as 'x2 - x1 + 1` and
+                # `y2 - y1 + 1`
                 mean_ap, _ = eval_map(
                     results,
                     annotations,
                     scale_ranges=None,
                     iou_thr=iou_thr,
                     dataset=ds_name,
-                    logger=logger)
+                    logger=logger,
+                    use_legacy_coordinate=True)
                 mean_aps.append(mean_ap)
                 eval_results[f'AP{int(iou_thr * 100):02d}'] = round(mean_ap, 3)
             eval_results['mAP'] = sum(mean_aps) / len(mean_aps)
         elif metric == 'recall':
             gt_bboxes = [ann['bboxes'] for ann in annotations]
             recalls = eval_recalls(
-                gt_bboxes, results, proposal_nums, iou_thrs, logger=logger)
+                gt_bboxes,
+                results,
+                proposal_nums,
+                iou_thrs,
+                logger=logger,
+                use_legacy_coordinate=True)
             for i, num in enumerate(proposal_nums):
                 for j, iou_thr in enumerate(iou_thrs):
                     eval_results[f'recall@{num}@{iou_thr}'] = recalls[i, j]

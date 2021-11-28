@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 import pickle
 import shutil
@@ -17,8 +18,7 @@ def single_gpu_test(model,
                     data_loader,
                     show=False,
                     out_dir=None,
-                    show_score_thr=0.3,
-                    show_gt=False):
+                    show_score_thr=0.3):
     model.eval()
     results = []
     dataset = data_loader.dataset
@@ -55,6 +55,7 @@ def single_gpu_test(model,
                     show=show,
                     out_file=out_file,
                     score_thr=show_score_thr)
+
         # encode mask results
         if isinstance(result[0], tuple):
             result = [(bbox_results, encode_mask_results(mask_results))
@@ -63,9 +64,6 @@ def single_gpu_test(model,
 
         for _ in range(batch_size):
             prog_bar.update()
-
-    if show_gt:
-        dataset.show_gt(out_dir)
     return results
 
 

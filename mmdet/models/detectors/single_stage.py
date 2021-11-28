@@ -1,3 +1,6 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+import warnings
+
 import torch
 
 from mmdet.core import bbox2result
@@ -22,7 +25,10 @@ class SingleStageDetector(BaseDetector):
                  pretrained=None,
                  init_cfg=None):
         super(SingleStageDetector, self).__init__(init_cfg)
-        backbone.pretrained = pretrained
+        if pretrained:
+            warnings.warn('DeprecationWarning: pretrained is deprecated, '
+                          'please use "init_cfg" instead')
+            backbone.pretrained = pretrained
         self.backbone = build_backbone(backbone)
         if neck is not None:
             self.neck = build_neck(neck)
@@ -132,7 +138,7 @@ class SingleStageDetector(BaseDetector):
         ]
         return bbox_results
 
-    def onnx_export(self, img, img_metas):
+    def onnx_export(self, img, img_metas, with_nms=True):
         """Test function without test time augmentation.
 
         Args:
@@ -154,7 +160,12 @@ class SingleStageDetector(BaseDetector):
         # `CornerNet` and `CentripetalNet`, which 'pad_shape' is used
         # for inference
         img_metas[0]['pad_shape_for_onnx'] = img_shape
-        # TODO:move all onnx related code in bbox_head to onnx_export function
-        det_bboxes, det_labels = self.bbox_head.get_bboxes(*outs, img_metas)
+
+        if len(outs) == 2:
+            # add dummy score_factor
+            outs = (*outs, None)
+        # TODO Can we change to `get_bboxes` when `onnx_export` fail
+        det_bboxes, det_labels = self.bbox_head.onnx_export(
+            *outs, img_metas, with_nms=with_nms)
 
         return det_bboxes, det_labels
