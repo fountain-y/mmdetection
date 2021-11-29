@@ -36,6 +36,14 @@ from .yolo_head import YOLOV3Head
 from .yolof_head import YOLOFHead
 from .yolox_head import YOLOXHead
 
+from .qfl_head import QFLHead
+
+#RanksortLoss
+from .rank_based_atss_head import RankBasedATSSHead
+from .rank_based_rpn_head import RankBasedRPNHead
+from .rank_based_paa_head import RankBasedPAAHead
+from .ranksort_yolact_head import RankSortYOLACTHead, RankSortYOLACTProtonet
+
 __all__ = [
     'AnchorFreeHead', 'AnchorHead', 'GuidedAnchorHead', 'FeatureAdaption',
     'RPNHead', 'GARPNHead', 'RetinaHead', 'RetinaSepBNHead', 'GARetinaHead',
@@ -47,5 +55,9 @@ __all__ = [
     'CascadeRPNHead', 'EmbeddingRPNHead', 'LDHead', 'CascadeRPNHead',
     'AutoAssignHead', 'DETRHead', 'YOLOFHead', 'DeformableDETRHead',
     'SOLOHead', 'DecoupledSOLOHead', 'CenterNetHead', 'YOLOXHead',
-    'DecoupledSOLOLightHead'
+    'DecoupledSOLOLightHead',
+    
+    'RankBasedATSSHead', 'RankBasedPAAHead', 'RankSortYOLACTHead',
+    'RankSortYOLACTProtonet', 'RankBasedRPNHead',
+    'QFLHead'
 ]
