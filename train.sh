@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=7 python ./tools/train.py configs/mask_rcnn/mask_rcnn_r50_fpn_1x_sartorius.py --work-dir work_dirs/20211130_mask_rcnn_r50_fpn_1x_sartorius | tee work_dirs/20211130_mask_rcnn_r50_fpn_1x_sartorius.log
+# CUDA_VISIBLE_DEVICES=6 python ./tools/train.py configs/swin/mask_rcnn_swin-t-p4-w7_fpn_ms-crop-3x_sartorius.py --work-dir work_dirs/20211130_mask_rcnn_swin-t-p4-w7_fpn_ms-crop-3x_sartorius | tee work_dir/20211130_mask_rcnn_swin-t-p4-w7_fpn_ms-crop-3x_sartorius.log
